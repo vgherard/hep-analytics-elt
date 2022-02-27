@@ -53,7 +53,7 @@ class ArxivETL(ETL):
             , "license"
             , "doi"
         ]]
-        self.data.rename(columns = {'journal-ref': 'journal_ref', 'report-no': 'report_no'})
+        self.data = self.data.rename(columns = {'journal-ref': 'journal_ref', 'report-no': 'report_no'})
 
     def load(self):
         # TODO: Print number of rows inserted (return value of to_sql())
@@ -67,7 +67,7 @@ class ArxivETL(ETL):
             """
             INSERT OR REPLACE INTO arxiv_raw
             SELECT * FROM arxiv_raw_dump
-            WHERE true
+            WHERE 1 = 1
             ON CONFLICT(id) DO UPDATE SET
             updated_date = excluded.updated_date
             , submitter = excluded.submitter
@@ -82,5 +82,9 @@ class ArxivETL(ETL):
             , doi = excluded.doi
             """
           )
+        self.db_con.commit()
+
+    def cleanup(self):
+        self.db_con.close()
 
 
