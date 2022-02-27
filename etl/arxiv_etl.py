@@ -11,7 +11,7 @@ OAI_BASE_URL = "http://export.arxiv.org/oai2"
 SQLITE_DB = os.path.abspath("./db/hepanalytics.sqlite")
 
 class ArxivETL(ETL):
-    def __init__(self, start_date, end_date, **kwargs):
+    def __init__(self, start_date, end_date):
         self.start_date = start_date
         self.end_date = end_date
         super().__init__()
@@ -21,6 +21,7 @@ class ArxivETL(ETL):
         self.db_con = sqlite3.connect(SQLITE_DB)
 
     def extract(self):
+        # TODO: retry after resumption token
         it = self.oai_con.ListRecords(**{
             'from': self.start_date
             , 'until': self.end_date
