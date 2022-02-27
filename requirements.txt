@@ -1,0 +1,3 @@
+# dbt
+dbt-core==1.0.3
+dbt-sqlite==1.0.0
