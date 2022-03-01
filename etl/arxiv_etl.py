@@ -8,7 +8,7 @@ from etl import ETL
 OAI_BASE_URL = "http://export.arxiv.org/oai2"
 
 # TODO: read path from env variable
-SQLITE_DB = os.path.abspath("./db/hepanalytics.sqlite")
+SQLITE_DB = os.path.abspath("./db/raw.sqlite")
 
 class ArxivETL(ETL):
     def __init__(self, start_date, end_date):
@@ -57,9 +57,9 @@ class ArxivETL(ETL):
         self.data = self.data.rename(columns = {'journal-ref': 'journal_ref', 'report-no': 'report_no'})
 
     def load(self):
-        # TODO: Print number of rows inserted (return value of to_sql())
+        # TODO: Print number of rows inserted (return value of to_sql())        #https://stackoverflow.com/questions/32681761/how-can-i-attach-an-in-memory-sqlite-database-in-python
         self.data.to_sql(
-            name = "arxiv_raw_dump"
+            name = "arxiv_dump"
             , con = self.db_con
             , if_exists = "replace"
             , index = False
@@ -67,7 +67,7 @@ class ArxivETL(ETL):
         self.db_con.execute(
             """
             INSERT OR REPLACE INTO arxiv_raw
-            SELECT * FROM arxiv_raw_dump
+            SELECT * FROM arxiv_dump
             WHERE 1 = 1
             ON CONFLICT(id) DO UPDATE SET
             updated_date = excluded.updated_date
@@ -83,6 +83,7 @@ class ArxivETL(ETL):
             , doi = excluded.doi
             """
           )
+        self.db_con.execute("DROP TABLE arxiv_dump")
         self.db_con.commit()
 
     def cleanup(self):

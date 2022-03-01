@@ -1,15 +1,22 @@
+CONFIG_DIR := config
 DB_DIR := db
-SQLITE_DB := $(DB_DIR)/hepanalytics.sqlite
+DB := $(DB_DIR)/db.sqlite
+DB_RAW := $(DB_DIR)/raw.sqlite
 VENV := venv
 
 .PHONY: clean all install-virtualenv install-py-deps
 
-all: $(SQLITE_DB) $(VENV)
+all: $(DB) $(VENV)
 
 $(DB_DIR):
 	mkdir $(DB_DIR)
-$(SQLITE_DB): $(DB_DIR)
-	sqlite3 "$(SQLITE_DB)" "VACUUM"
+
+$(DB_RAW):
+	sqlite3 "$(DB_RAW)" < $(CONFIG_DIR)/arxiv_raw_ddl.sql
+
+$(DB): $(DB_DIR) $(DB_RAW)
+	sqlite3 "$(DB)" "VACUUM"
+	sqlite3 "$(DB)" "ATTACH DATABASE '$(DB_RAW)' AS raw"
 
 install-virtualenv:
 	pip install virtualenv
