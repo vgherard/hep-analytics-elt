@@ -25,5 +25,7 @@ $(VENV): install-virtualenv requirements.txt
 	virtualenv --python=python3.9 $(VENV)
 	. ./venv/bin/activate && pip install -r requirements.txt
 
+# TODO: create dbt profile from template
+
 clean:
 	@$(RM) -r $(DB_DIR) $(VENV)
