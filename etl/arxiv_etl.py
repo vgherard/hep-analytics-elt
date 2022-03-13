@@ -1,7 +1,12 @@
 import os
+
+from sickle import Sickle
+from requests.exceptions import HTTPError
+from time import sleep
+
 import pandas as pd
 import sqlite3
-from sickle import Sickle
+
 from etl import ETL
 
 
@@ -16,22 +21,46 @@ class ArxivETL(ETL):
         self.end_date = end_date
         super().__init__()
 
+    def _get_oai_iterator(self, resumptionToken = None):
+        if resumptionToken:
+            args = {'resumptionToken': resumptionToken}
+        else:
+            args = {
+                'from': self.start_date
+                , 'until': self.end_date
+                , 'metadataPrefix': 'arXivRaw'
+                # TODO: double-check this is actually filtering deleted records
+                , 'ignore_deleted': True
+                # TODO: choose set
+                , 'set': 'physics:hep-ph'
+            }
+        it = self.oai_con.ListRecords(**args)
+        return it
+
     def setup(self):
         self.oai_con = Sickle(OAI_BASE_URL)
         self.db_con = sqlite3.connect(SQLITE_DB)
 
     def extract(self):
         # TODO: retry after resumption token
-        it = self.oai_con.ListRecords(**{
-            'from': self.start_date
-            , 'until': self.end_date
-            , 'metadataPrefix': 'arXivRaw'
-            # TODO: double-check this is actually filtering deleted records
-            , 'ignore_deleted': True
-            # TODO: choose set
-            , 'set': 'physics:hep-ph'
-        })
-        self.data = [rec.get_metadata() for rec in it]
+        it = self._get_oai_iterator()
+        self.data = []
+        while True:
+            try:
+                self.data.append(it.next().get_metadata())
+
+            except AttributeError:
+                print("There was an AttributeError")
+
+            except HTTPError:
+                print('There was an HTTPError. Going to sleep for 30 seconds...')
+                sleep(30)
+                it = self._get_oai_iterator(resumptionToken = it.resumption_token.token)
+
+
+            except StopIteration:
+                break
+
 
     def transform(self):
         self.data = [
@@ -57,7 +86,7 @@ class ArxivETL(ETL):
         self.data = self.data.rename(columns = {'journal-ref': 'journal_ref', 'report-no': 'report_no'})
 
     def load(self):
-        # TODO: Print number of rows inserted (return value of to_sql())        #https://stackoverflow.com/questions/32681761/how-can-i-attach-an-in-memory-sqlite-database-in-python
+        # TODO: Print number of rows inserted (return value of to_sql())
         self.data.to_sql(
             name = "arxiv_dump"
             , con = self.db_con
