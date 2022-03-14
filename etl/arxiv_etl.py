@@ -42,25 +42,19 @@ class ArxivETL(ETL):
         self.db_con = sqlite3.connect(SQLITE_DB)
 
     def extract(self):
-        # TODO: retry after resumption token
         it = self._get_oai_iterator()
         self.data = []
         while True:
             try:
                 self.data.append(it.next().get_metadata())
-
             except AttributeError:
                 print("There was an AttributeError")
-
             except HTTPError:
                 print('There was an HTTPError. Going to sleep for 30 seconds...')
                 sleep(30)
                 it = self._get_oai_iterator(resumptionToken = it.resumption_token.token)
-
-
             except StopIteration:
                 break
-
 
     def transform(self):
         self.data = [
@@ -99,17 +93,17 @@ class ArxivETL(ETL):
             SELECT * FROM arxiv_dump
             WHERE 1 = 1
             ON CONFLICT(id) DO UPDATE SET
-            updated_date = excluded.updated_date
-            , submitter = excluded.submitter
-            , authors = excluded.authors
-            , title = excluded.title
-            , abstract = excluded.abstract
-            , categories = excluded.categories
-            , comments = excluded.comments
-            , journal_ref = excluded.journal_ref
-            , report_no = excluded.report_no
-            , license = excluded.license
-            , doi = excluded.doi
+                updated_date = excluded.updated_date
+                , submitter = excluded.submitter
+                , authors = excluded.authors
+                , title = excluded.title
+                , abstract = excluded.abstract
+                , categories = excluded.categories
+                , comments = excluded.comments
+                , journal_ref = excluded.journal_ref
+                , report_no = excluded.report_no
+                , license = excluded.license
+                , doi = excluded.doi
             """
           )
         self.db_con.execute("DROP TABLE arxiv_dump")
@@ -117,5 +111,4 @@ class ArxivETL(ETL):
 
     def cleanup(self):
         self.db_con.close()
-
 
