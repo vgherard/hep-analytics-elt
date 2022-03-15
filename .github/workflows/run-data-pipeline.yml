@@ -18,6 +18,6 @@ jobs:
       - name: install-python-deps
         run: pip install -r requirements.txt
       - name: ingest
-        run: python runners/run_arxiv.py
+        run: python etl_runners/etl_run_arxiv.py
       - name: transform
         run: echo "Nothing to do... yet!"
