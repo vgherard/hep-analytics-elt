@@ -7,7 +7,7 @@ from time import sleep
 import pandas as pd
 import sqlite3
 
-from etl_runners.etl import ETL
+from .etl import ETL
 
 
 OAI_BASE_URL = "http://export.arxiv.org/oai2"
