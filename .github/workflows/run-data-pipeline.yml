@@ -1,0 +1,23 @@
+name: run-data-pipeline
+
+on:
+  push:
+  schedule:
+    - cron: '0 5 * * *'
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: setup-python
+        uses: actions/setup-python@v2
+        with:
+          python-version: '3.9'
+          cache: 'pip'
+      - name: install-python-deps
+        run: pip install -r requirements.txt
+      - name: ingest
+        run: python runners/run_arxiv.py
+      - name: transform
+        run: echo "Nothing to do... yet!"

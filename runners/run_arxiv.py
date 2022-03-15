@@ -1,3 +1,9 @@
 from etl.arxiv_etl import ArxivETL
+from datetime import date, timedelta
 
-ArxivETL.run(start_date = '2021-01-01', end_date = '2021-04-01')
+N_DAYS = 7
+
+end_date = date.today()
+start_date = end_date - timedelta(days = N_DAYS)
+
+ArxivETL.run(start_date = start_date, end_date = end_date)
