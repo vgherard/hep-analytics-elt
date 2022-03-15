@@ -3,5 +3,5 @@
 .RData
 .Ruserdata
 .idea
-*/__pycache__
+**/__pycache__
 logs
