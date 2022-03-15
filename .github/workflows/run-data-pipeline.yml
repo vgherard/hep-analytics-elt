@@ -28,3 +28,6 @@ jobs:
       - uses: stefanzweifel/git-auto-commit-action@v4
         with:
           commit_message: Update SQLite DB
+          commit_user_name: GHA bot
+          commit_user_email: vgherard840@gmail.com # defaults to "actions@github.com"
+          commit_author: Valerio Gherardi <vgherard840@gmail.com> # defaults to author of the commit that triggered the run
