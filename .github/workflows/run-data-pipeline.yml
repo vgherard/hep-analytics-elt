@@ -29,5 +29,5 @@ jobs:
         with:
           commit_message: Update SQLite DB
           commit_user_name: GHA bot
-          commit_user_email: vgherard840@gmail.com
+          commit_user_email: actions@github.com
           commit_author: Valerio Gherardi <vgherard840@gmail.com>
