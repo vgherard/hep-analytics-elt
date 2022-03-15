@@ -9,6 +9,8 @@
 yet, or the repository is only intended to be a limited example, demo,
 or
 proof-of-concept.](https://www.repostatus.org/badges/latest/concept.svg)](https://www.repostatus.org/#concept)
+![run-data-pipeline](https://github.com/vgherard/hep-analytics-elt/actions/workflows/run-data-pipeline.yml/badge.svg)
+
 <!-- badges: end -->
 
 The goal of this project is to setup a data pipeline for High Energy
