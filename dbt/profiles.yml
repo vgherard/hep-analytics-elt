@@ -1,5 +1,3 @@
-# TODO: fill absolute paths via script
-
 hep_analytics:
   outputs:
     prod:
@@ -11,14 +9,13 @@ hep_analytics:
       # This value is arbitrary
       database: "database"
 
-
       schema: 'main'
 
       schemas_and_paths:
-        main: '/Users/valerio/Code/personal/hep-analytics-elt/db/db.sqlite'
-        raw: '/Users/valerio/Code/personal/hep-analytics-elt/db/raw.sqlite'
+        main: '../db/db.sqlite'
+        raw: '../db/raw.sqlite'
 
-      schema_directory: '/Users/valerio/Code/personal/hep-analytics-elt/db'
+      schema_directory: '../db'
 
       #extensions:
         #- '/path/to/sqlite-digest/digest.so'
