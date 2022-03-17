@@ -1,4 +1,4 @@
-from etl.arxiv_etl import ArxivETL
+from etl.arxiv_etl_v2 import ArxivETL
 from datetime import date, timedelta
 
 N_DAYS = 7
