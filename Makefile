@@ -2,7 +2,6 @@ CONFIG_DIR := config
 DB_DIR := db
 DB := $(DB_DIR)/db.sqlite
 DB_RAW := $(DB_DIR)/raw.sqlite
-VENV := venv
 
 .PHONY: clean all install-virtualenv install-py-deps
 
@@ -21,9 +20,12 @@ $(DB): $(DB_DIR) $(DB_RAW)
 install-virtualenv:
 	pip install virtualenv
 
-$(VENV): install-virtualenv requirements.txt
-	virtualenv --python=python3.9 $(VENV)
+venv: install-virtualenv requirements.txt
+	virtualenv --python=python3.9 venv
 	. ./venv/bin/activate && pip install -r requirements.txt
 
+venv_dbt: install-virtualenv requirements_dbt.txt
+	virtualenv --python=python3.9 venv_dbt
+	. ./venv_dbt/bin/activate && pip install -r requirements_dbt.txt
 clean:
-	@$(RM) -r $(DB_DIR) $(VENV)
+	@$(RM) -r $(DB_DIR) venv venv_dbt

@@ -1,11 +1,11 @@
-# dbt
-dbt-core == 1.0.3
-dbt-sqlite == 1.0.0
+# DB Connection
+sqlalchemy
+sqlalchemy-bigquery
 
 # Data extraction
-requests == 2.27.1
-feedparser == 6.0.8
-sickle == 0.7.0    # OAI-PMH Client
+requests
+feedparser
+sickle
 
 # Data manipulation
-pandas == 1.4.1
+pandas

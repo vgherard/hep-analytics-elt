@@ -1,6 +1,8 @@
+from .sql import default_engine
+
 class ETL:
-    def __init__(self):
-        pass
+    def __init__(self, **kwargs):
+        self._eng = default_engine(**kwargs)
 
     def setup(self):
         pass
