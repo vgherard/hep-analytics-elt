@@ -1,3 +1,2 @@
 dbt-core
-dbt-bigquery
-MarkupSafe
+dbt-postgres
