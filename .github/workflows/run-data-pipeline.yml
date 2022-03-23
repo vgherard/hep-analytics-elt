@@ -2,6 +2,8 @@ name: run-data-pipeline
 
 on:
   push:
+    branches:
+      - master
   schedule:
     - cron: '0 5 * * *'
 
