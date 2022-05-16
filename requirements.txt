@@ -1,11 +1,13 @@
 # DB Connection
 sqlalchemy
-sqlalchemy-bigquery
+psycopg2-binary
 
 # Data extraction
 requests
 feedparser
-sickle
 
 # Data manipulation
 pandas
+
+# Misc
+pyyaml
