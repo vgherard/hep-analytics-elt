@@ -1,9 +1,6 @@
 from etl.arxiv_etl import ArxivETL
 from datetime import date, timedelta
 
-
-# TODO: read BigQuery credentials from env variable or from system configuration file
-
 N_DAYS = 7
 
 end_date = date.today()
