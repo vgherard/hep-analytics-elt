@@ -1,0 +1,22 @@
+config:
+#  partial_parse: <true | false>
+  use_colors: true # <true | false>
+  printer_width: 120 # <integer>
+  send_anonymous_usage_stats: true # <true | false>
+
+hep_analytics:
+  target: prod
+  outputs:
+    prod:
+      type: postgres
+      host: {{ dbt_host }}
+      user: {{ dbt_user }}
+      password: {{ dbt_password }}
+      port: {{ dbt_port }}
+      dbname: {{ dbt_dbname }}
+      schema: {{ dbt_schema }}
+      threads: 1
+      keepalives_idle: 0
+      connect_timeout: 10
+      role: {{ dbt_role }}
+
