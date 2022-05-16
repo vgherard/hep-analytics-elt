@@ -1,13 +1,18 @@
 from sqlalchemy import create_engine
+from yaml import safe_load as load_yaml
+from os.path import expanduser
 
-def bigquery_engine(project_id, credentials_path, dataset = 'main'):
+def postgres_engine():
     """
     Thin wrapper around sqlalchemy.create_engine().
-    :param project_id: Google Cloud project name.
-    :param credentials: path to Service Account credentials JSON.
     """
-    uri = f'bigquery://{project_id}/{dataset}'
-    eng = create_engine(uri, credentials_path = credentials_path)
+
+    db_conn_path = expanduser("~/.hepanalytics/db_connection.yml")
+    db_conn = load_yaml(open(db_conn_path))
+    uri = "postgresql+psycopg2://" +\
+          db_conn["user"] + ":" + db_conn["password"] +\
+          "@" + db_conn["host"] + ":" + str(db_conn["port"]) + "/" + db_conn["dbname"]
+    eng = create_engine(uri)
     return eng
 
-default_engine = bigquery_engine
+default_engine = postgres_engine
