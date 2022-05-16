@@ -9,6 +9,20 @@ import pandas as pd
 from .etl import ETL
 
 ARXIV_API_ENDPOINT = "http://export.arxiv.org/api/query"
+ARXIV_FEED_COLUMNS = [
+    'id'
+    , 'published'
+    , 'updated'
+    , 'authors'
+    , 'author'
+    , 'title'
+    , 'summary'
+    , 'link'
+    , 'arxiv_doi'
+    , 'arxiv_comment'
+    , 'arxiv_journal_ref'
+    , 'tags'
+    ]
 
 class ArxivETL(ETL):
     def __init__(self, start_date, end_date, **kwargs):
@@ -33,22 +47,11 @@ class ArxivETL(ETL):
 
     def transform(self):
         # TODO: append columns with NULLs if the arxiv feed does not return all variables
-        self.data = self.data[[
-            'id'
-            , 'published'
-            , 'updated'
-            , 'authors'
-            , 'author'
-            , 'title'
-            , 'summary'
-            , 'link'
-            , 'arxiv_doi'
-            , 'arxiv_comment'
-            , 'arxiv_journal_ref'
-            , 'tags'
-        ]].rename(columns = {
-            'author': 'submitter'
-        })
+        for col_name in ARXIV_FEED_COLUMNS:
+            if col_name not in self.data:
+                self.data[col_name] = None
+        self.data = self.data[ARXIV_FEED_COLUMNS]
+        self.data = self.data.rename(columns = {'author': 'submitter'})
         self.data['tags'] = [
             '|'.join( [tag['term'] for tag in tag_list] )
             for tag_list in self.data['tags']
@@ -59,7 +62,6 @@ class ArxivETL(ETL):
             ]
 
     def load(self):
-        # TODO: implement BigQuery upsert through a callable method
         # TODO: Print number of rows inserted (return value of to_sql())
         self.data.to_sql(
             name = "arxiv_dump"
@@ -70,27 +72,14 @@ class ArxivETL(ETL):
         )
 
         # TODO: either the above solution, or create a wrapper for this upsert query!
+        on_conflict_updates = ", ".join([col_name + " = EXCLUDED." + col_name for col_name in ARXIV_FEED_COLUMNS ])
         self._eng.execute(
             """
-            MERGE raw.arxiv a
-            USING raw.arxiv_dump d
-            ON a.id = d.id
-            WHEN MATCHED THEN
-            UPDATE SET 
-                published = d.published
-                , updated = d.updated
-                , authors = d.authors
-                , submitter = d.submitter
-                , title = d.title
-                , summary = d.summary
-                , link = d.link
-                , arxiv_doi = d.arxiv_doi
-                , arxiv_comment = d.arxiv_comment
-                , arxiv_journal_ref = d.arxiv_journal_ref
-                , tags = d.tags
-            WHEN NOT MATCHED THEN
-                INSERT ROW
-            """
+            INSERT INTO raw.arxiv
+            ( SELECT * FROM raw.arxiv_dump )
+            ON CONFLICT (id) DO UPDATE
+            SET 
+            """ + on_conflict_updates
           )
 
     def cleanup(self):
